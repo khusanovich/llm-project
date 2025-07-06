@@ -11,6 +11,10 @@ def log_message(role, message):
     with open(log_file_path, "a") as log_file:
         log_file.write(f"[{timestamp}] {role}: {message}\n")
 
+# Logging conversation
+log_message("User: What is photosynthesis?")
+log_message("AI: Photosynthesis is a process...")
+
 while True:
     user_input = input("You: ")
     if user_input.lower() in {"exit", "quit"}:
