@@ -1,3 +1,9 @@
 [2025-07-06 08:51:47] You: are you working today ?
 [2025-07-06 08:54:00] Bot: 
 I'm just an AI, I don't have a physical body or a specific work schedule. I am available 24/7 to assist you with any questions or tasks you may have. Is there anything specific you would like me to help you with?
+2025-07-07 00:52:21.869871 - USER: Hi, who are you?
+2025-07-07 00:52:21.870241 - BOT: Hello! I'm LLaMA, an AI assistant developed by Meta AI that can understand and respond to human input in a conversational manner. How may I assist you today? 😊
+
+2025-07-07 01:16:16.545712 - USER: i am trying to build a LLM project, maybe you can help me
+2025-07-07 01:16:16.545724 - BOT: Of course! I'd be happy to help you with your LLM project. Can you tell me more about the project and what you need help with? What is the topic or theme of the project, and what are you hoping to achieve? The more information you can provide, the better I can assist you. 😊
+
