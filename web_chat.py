@@ -1,21 +1,21 @@
 import gradio as gr
-from datetime import datetime
 from ollama import Client
 
 client = Client()
 
-def chat_with_model(message, history):
-    full_history = "\n".join([f"User: {user}\nAI: {bot}" for user, bot in history])
-    prompt = f"{full_history}\nUser: {message}\nAI:"
-    response = client.chat(model="llama2", messages=[{"role": "user", "content": prompt}])
-    reply = response['message']['content']
+def chat_fn(messages):
+    # messages = list of dicts like: {"role": "user", "content": "..."}
+    response = client.chat(model="llama2", messages=messages)
+    return response['message']['content']
 
-    # Optional: log to file with timestamp
-    with open("chat_log.txt", "a") as f:
-        f.write(f"{datetime.now()} - USER: {message}\n")
-        f.write(f"{datetime.now()} - BOT: {reply}\n\n")
-
-    return reply
-
-gr.ChatInterface(fn=chat_with_model, title="Llama2 Chat with Ollama").launch()
+gr.ChatInterface(
+    fn=chat_fn,
+    chatbot=gr.Chatbot(),
+    textbox=gr.Textbox(placeholder="Ask me anything..."),
+    title="Llama2 Chat",
+    theme="soft",
+    examples=["What is photosynthesis?", "Tell me a joke"],
+    retry_btn="🔁 Retry",
+    clear_btn="🗑️ Clear",
+).launch()
 
