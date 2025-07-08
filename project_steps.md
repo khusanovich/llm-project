@@ -28,6 +28,7 @@ Let the user upload a PDF via the Gradio web UI.
 
 Extract the text (e.g. with PyMuPDF, pdfplumber, or PyPDF2).
 
+new line comes here
 Optionally split the text into chunks and use embeddings to find relevant context for each question (this is called RAG – Retrieval-Augmented Generation).
 
 Feed the most relevant chunks + user question into the LLM.
