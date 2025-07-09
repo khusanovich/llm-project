@@ -73,3 +73,12 @@ Integrated message history for multi-turn chat (so it remembers what you said).
 - Add PDF upload + question-answering
 - Chunking + embedding for RAG
 
+tried to run mistral:8b-2410 locally using openllm serve, but:
+
+✅ Model was found.
+
+❌ My local machine does not have enough RAM/VRAM to run a model that large (8B+ parameters).
+
+❌ Then tried to run a gated model (Ministral-8B-Instruct-2410) but it needs manual approval on Hugging Face, which you likely haven't been granted.
+
+
