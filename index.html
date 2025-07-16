@@ -1,55 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>LLM Frontend</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-    }
-    textarea, input, button {
-      font-size: 1rem;
-      margin-top: 10px;
-      width: 100%;
-    }
-    .response {
-      margin-top: 20px;
-      white-space: pre-wrap;
-      border: 1px solid #ccc;
-      padding: 10px;
-    }
-  </style>
 </head>
 <body>
-  <h1>Ask the LLM</h1>
-  <textarea id="prompt" rows="4" placeholder="Enter your prompt..."></textarea>
+  <h1>Ask the Model</h1>
+  <input id="prompt" type="text" placeholder="Type your question..." />
   <button onclick="sendPrompt()">Send</button>
+  <p><strong>Response:</strong> <span id="response"></span></p>
+<script>
+  async function sendPrompt() {
+    const prompt = document.getElementById("prompt").value;
+    const responseBox = document.getElementById("response");
 
-  <div class="response" id="responseBox"></div>
+    const res = await fetch("http://localhost:8000/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
 
-  <script>
-    async function sendPrompt() {
-      const prompt = document.getElementById("prompt").value;
-      const responseBox = document.getElementById("responseBox");
-      responseBox.innerText = "Loading...";
+    const data = await res.json();
+    responseBox.textContent = data.response || "(no response)";
+  }
+</script>
 
-      try {
-        const response = await fetch("http://127.0.0.1:8000/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ prompt })
-        });
-
-        const data = await response.json();
-        responseBox.innerText = data.response;
-      } catch (error) {
-        responseBox.innerText = "Error: " + error;
-      }
-    }
-  </script>
 </body>
 </html>
 

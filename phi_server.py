@@ -1,12 +1,20 @@
 from fastapi import FastAPI, Request
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from fastapi.middleware.cors import CORSMiddleware
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
 app = FastAPI()
 
-model_id = "microsoft/phi-2"
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16, device_map="auto")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or use ["http://localhost:5500"] for more security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2")
+model = AutoModelForCausalLM.from_pretrained("microsoft/phi-2", device_map="auto")
 
 @app.post("/generate")
 async def generate(request: Request):
@@ -16,5 +24,6 @@ async def generate(request: Request):
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     outputs = model.generate(**inputs, max_new_tokens=100)
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
     return {"response": response}
 
