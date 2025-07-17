@@ -2,29 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LLM Frontend</title>
+  <title>LLM Chat App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+      border-radius: 10px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #chat {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .message {
+      margin-bottom: 15px;
+    }
+
+    .user {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .bot {
+      margin-left: 10px;
+      color: #007bff;
+    }
+
+    input[type="text"] {
+      width: 75%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-left: 5px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #888;
+    }
+  </style>
 </head>
 <body>
-  <h1>Ask the Model</h1>
-  <input id="prompt" type="text" placeholder="Type your question..." />
-  <button onclick="sendPrompt()">Send</button>
-  <p><strong>Response:</strong> <span id="response"></span></p>
-<script>
-  async function sendPrompt() {
-    const prompt = document.getElementById("prompt").value;
-    const responseBox = document.getElementById("response");
+  <h1>LLM Chat</h1>
 
-    const res = await fetch("http://localhost:8000/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt })
-    });
+  <div id="chat"></div>
 
-    const data = await res.json();
-    responseBox.textContent = data.response || "(no response)";
-  }
-</script>
+  <input id="prompt" type="text" placeholder="Ask something..." />
+  <button id="sendBtn" onclick="sendPrompt()">Send</button>
 
+  <script>
+    const chat = document.getElementById("chat");
+    const promptInput = document.getElementById("prompt");
+    const sendBtn = document.getElementById("sendBtn");
+
+    async function sendPrompt() {
+      const prompt = promptInput.value.trim();
+      if (!prompt) return;
+
+      // Show user message
+      chat.innerHTML += `<div class="message"><span class="user">You:</span> ${prompt}</div>`;
+      chat.innerHTML += `<div class="message"><span class="bot">Bot:</span> <em>Thinking...</em></div>`;
+      chat.scrollTop = chat.scrollHeight;
+
+      // Disable input during fetch
+      sendBtn.disabled = true;
+      promptInput.disabled = true;
+
+      try {
+        const res = await fetch("http://localhost:8000/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
+
+        const data = await res.json();
+
+        // Replace "Thinking..." with actual response
+        const messages = document.querySelectorAll(".bot");
+        messages[messages.length - 1].innerHTML = data.response || "(no response)";
+      } catch (err) {
+        const messages = document.querySelectorAll(".bot");
+        messages[messages.length - 1].innerHTML = `<span style="color: red;">Error connecting to server</span>`;
+      }
+
+      // Re-enable input and clear
+      promptInput.value = "";
+      promptInput.disabled = false;
+      sendBtn.disabled = false;
+      promptInput.focus();
+    }
+  </script>
 </body>
 </html>
 
