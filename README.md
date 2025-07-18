@@ -1,4 +1,4 @@
-Goal of Your Project
+Goal of the Project
 
 To build a simple full-stack LLM-powered app that lets users:
 
