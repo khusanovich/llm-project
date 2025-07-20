@@ -2,91 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LLM Chat App</title>
+  <title>LLM Chatbot</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #f5f5f5;
-      border-radius: 10px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
     }
 
     h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
       text-align: center;
     }
 
-    #chat {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      max-height: 400px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-    }
-
-    .message {
-      margin-bottom: 15px;
-    }
-
-    .user {
-      font-weight: bold;
-      color: #333;
-    }
-
-    .bot {
-      margin-left: 10px;
-      color: #007bff;
-    }
-
     input[type="text"] {
-      width: 75%;
-      padding: 10px;
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      margin-bottom: 12px;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 8px;
     }
 
     button {
-      padding: 10px 15px;
-      margin-left: 5px;
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
     }
 
     button:disabled {
-      background-color: #888;
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    #response {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      min-height: 40px;
+    }
+
+    .loading {
+      color: #888;
+      font-style: italic;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>LLM Chat</h1>
-
-  <div id="chat"></div>
-
-  <input id="prompt" type="text" placeholder="Ask something..." />
-  <button id="sendBtn" onclick="sendPrompt()">Send</button>
+  <div class="container">
+    <h1>Ask the AI</h1>
+    <input id="prompt" type="text" placeholder="Type your question..." />
+    <button onclick="sendPrompt()" id="sendBtn">Send</button>
+    <div id="response"></div>
+  </div>
 
   <script>
-    const chat = document.getElementById("chat");
-    const promptInput = document.getElementById("prompt");
-    const sendBtn = document.getElementById("sendBtn");
-
     async function sendPrompt() {
+      const promptInput = document.getElementById("prompt");
+      const responseBox = document.getElementById("response");
+      const sendBtn = document.getElementById("sendBtn");
       const prompt = promptInput.value.trim();
+
       if (!prompt) return;
 
-      // Show user message
-      chat.innerHTML += `<div class="message"><span class="user">You:</span> ${prompt}</div>`;
-      chat.innerHTML += `<div class="message"><span class="bot">Bot:</span> <em>Thinking...</em></div>`;
-      chat.scrollTop = chat.scrollHeight;
-
-      // Disable input during fetch
+      responseBox.className = "loading";
+      responseBox.textContent = "Thinking...";
       sendBtn.disabled = true;
-      promptInput.disabled = true;
 
       try {
         const res = await fetch("http://localhost:8000/generate", {
@@ -95,21 +101,18 @@
           body: JSON.stringify({ prompt }),
         });
 
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
         const data = await res.json();
-
-        // Replace "Thinking..." with actual response
-        const messages = document.querySelectorAll(".bot");
-        messages[messages.length - 1].innerHTML = data.response || "(no response)";
+        responseBox.className = "";
+        responseBox.textContent = data.response || "(no response)";
       } catch (err) {
-        const messages = document.querySelectorAll(".bot");
-        messages[messages.length - 1].innerHTML = `<span style="color: red;">Error connecting to server</span>`;
+        responseBox.className = "error";
+        responseBox.textContent = "⚠️ Failed to get response.";
+        console.error(err);
+      } finally {
+        sendBtn.disabled = false;
       }
-
-      // Re-enable input and clear
-      promptInput.value = "";
-      promptInput.disabled = false;
-      sendBtn.disabled = false;
-      promptInput.focus();
     }
   </script>
 </body>
